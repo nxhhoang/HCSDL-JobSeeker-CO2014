@@ -76,7 +76,6 @@
 | Method   | Endpoint                   | Mô tả & Logic nghiệp vụ                                        |
 | -------- | -------------------------- | -------------------------------------------------------------- |
 | **POST** | `/companies`               | Tạo profile công ty.<br>Validate: TaxNumber, Website hợp lệ.   |
-| **PUT**  | `/employers/me`            | Cập nhật thông tin Employer. Nếu là công ty, update `COMPANY`. |
 | **GET**  | `/employers/:id`           | Lấy thông tin chi tiết nhà tuyển dụng.                         |
 | **GET**  | `/employers/:id/followers` | Xem danh sách người theo dõi (`FOLLOW`).                       |
 
@@ -176,6 +175,17 @@ POST /api/v1/auth/register
     "name": "Nguyễn Văn Hoàng",
     "userType": "Candidate" // Hoặc "Employer"
 }
+
+POST /api/v1/auth/register
+{
+    "username": "hr_tech_inc",
+    "password": "Password123!",
+    "email": "contact@techinc.com",
+    "phone": "02833445566",
+    "name": "Tech Inc HR",
+    "userType": "Employer",
+    "employerType": "Company" // Hoặc "Person"
+}
 ```
 
   - **Response (Success):**
@@ -189,7 +199,8 @@ POST /api/v1/auth/register
         "userId": "1001",
         "username": "hoangnguyen",
         "email": "hoang@email.com",
-        "isActive": false // Mặc định false theo ràng buộc 1.3 
+        "userType": "Candidate", // Nếu là employer có thêm thuộc tính employerType
+        "isActive": false // Mặc định false theo ràng buộc 1.3
     },
     "error": null
 }
@@ -225,8 +236,39 @@ POST /api/v1/auth/login
         "user": {
             "id": "1001",
             "name": "Nguyễn Văn Hoàng",
-            "userType": "Candidate",
-            "avatar": "https://api.mysite.com/uploads/avatar-default.jpg"
+            "avatar": "https://api.mysite.com/uploads/avatar-default.jpg",
+            "userType": "Candidate", // Định danh chính
+            "employerType": null     // Null vì là Candidate
+        }
+    },
+    "error": null
+}
+{
+    "message": "Đăng nhập thành công",
+    "data": {
+        "accessToken": "eyJhbGciOiJIUz...",
+        "refreshToken": "d78sdf78s...",
+        "user": {
+            "id": "2001",
+            "name": "Công ty Tech Inc",
+            "avatar": "https://api.mysite.com/uploads/logos/tech-inc.png",
+            "userType": "Employer",      // Định danh chính
+            "employerType": "Company"    // Định danh phụ (Quan trọng để load Dashboard Công ty)
+        }
+    },
+    "error": null
+}
+{
+    "message": "Đăng nhập thành công",
+    "data": {
+        "accessToken": "eyJhbGciOiJIUz...",
+        "refreshToken": "d78sdf78s...",
+        "user": {
+            "id": "2002",
+            "name": "Nguyễn HR Freelance",
+            "avatar": "https://api.mysite.com/uploads/avatars/hr-person.jpg",
+            "userType": "Employer",      // Định danh chính
+            "employerType": "Person"     // Định danh phụ (Quan trọng để load Dashboard Cá nhân)
         }
     },
     "error": null
@@ -405,19 +447,68 @@ POST /api/v1/auth/reset-password
 ```json
 GET /api/v1/users/me
 {
-    "message": "Lấy thông tin thành công",
-    "data": {
-        "id": "1001",
-        "username": "hoangnguyen",
-        "email": "hoang@email.com",
-        "phone": "0909123456",
-        "name": "Nguyễn Văn Hoàng",
-        "address": "TP.HCM",
-        "userType": "Candidate",
-        "ssn": "079123456789", // Nếu là Person
+  "message": "Lấy thông tin người dùng thành công",
+  "data": {
+    "id": "1001",
+    "username": "candidate_A",
+    "email": "a@gmail.com",
+    "phone": "0901234567",
+    "name": "Nguyễn Văn A",
+    "address": "TP.HCM",
+    "avatar": "https://.../ava.jpg",
+    "bio": "Lập trình viên Fullstack",
+    "userType": "Candidate",  // Dùng để định danh cấp 1
+    "specificData": {         // Dữ liệu riêng của bảng CANDIDATE
+        "ssn": "079123456789",
         "dob": "2000-01-01"
-    },
-    "error": null
+    }
+  },
+  "error": null
+},
+{
+  "message": "Lấy thông tin người dùng thành công",
+  "data": {
+    "id": "2001",
+    "username": "tech_company",
+    "email": "contact@tech.com",
+    "phone": "02833334444",
+    "name": "Công ty Công Nghệ Tech", // Tên hiển thị chung trong bảng USER
+    "address": "Khu Công Nghệ Cao, Q9",
+    "avatar": "https://.../logo.png",
+    "bio": "Dẫn đầu xu hướng công nghệ",
+    "userType": "Employer",       // Định danh cấp 1
+    "employerType": "Company",    // Định danh cấp 2 (Quan trọng)
+    "specificData": {             // Dữ liệu từ bảng COMPANY
+        "taxNumber": "0312345678",
+        "foundedDate": "2015-05-20",
+        "industry": "Software Outsourcing",
+        "size": "100-500",
+        "country": "Vietnam",
+        "website": "https://tech.com"
+    }
+  },
+  "error": null
+},
+{
+  "message": "Lấy thông tin người dùng thành công",
+  "data": {
+    "id": "2002",
+    "username": "hr_freelancer",
+    "email": "hr@freelance.com",
+    "phone": "0909999888",
+    "name": "Trần Thị B",
+    "address": "Hà Nội",
+    "avatar": "https://.../face.jpg",
+    "bio": "Headhunter tự do",
+    "userType": "Employer",      // Định danh cấp 1
+    "employerType": "Person",    // Định danh cấp 2 (Quan trọng)
+    "specificData": {            // Dữ liệu từ bảng PERSON (Con của Employer)
+        "ssn": "001122334455",
+        "dob": "1990-12-12",
+        "socialLink": "https://linkedin.com/in/tranthib"
+    }
+  },
+  "error": null
 }
 ```
 
@@ -439,6 +530,25 @@ PUT /api/v1/users/me
     "dob": "2000-05-20", // Backend check age > 18
     "ssn": "079098765432"
 }
+{
+    "name": "Công ty ABC",
+    "address": "Đà Nẵng",
+    "employerType": "Company", // Bắt buộc gửi để BE biết validate bảng nào
+    "specificData": {
+        "website": "https://abc.com",
+        "size": "50-100"
+        // Không cho sửa TaxNumber (thường là read-only sau khi verify)
+    }
+}
+{
+    "name": "Nguyễn Văn Tuyển Dụng",
+    "address": "Hà Nội",
+    "employerType": "Person",
+    "specificData": {
+        "socialLink": "https://fb.com/tuyendung",
+        "dob": "1995-05-05"
+    }
+}
 ```
 
   - **Response (Success):**
@@ -446,14 +556,105 @@ PUT /api/v1/users/me
 
 
 ```json
+// Success Response
 {
-    "message": "Cập nhật thông tin thành công",
+    "message": "Cập nhật hồ sơ ứng viên thành công",
     "data": {
         "id": "1001",
+        "username": "hoangnguyen",
         "name": "Nguyễn Văn Hoàng",
-        "dob": "2000-05-20"
+        "address": "Hà Nội",
+        "phone": "0909123456",
+        "avatar": "https://api.mysite.com/uploads/avatars/u1001.jpg",
+        "userType": "Candidate",
+        "specificData": {
+            "dob": "2000-05-20",
+            "ssn": "079098765432",
+            "cvUrl": "https://storage.mysite.com/cvs/default.pdf" // Nếu có
+        }
     },
     "error": null
+}
+{
+    "message": "Cập nhật thông tin công ty thành công",
+    "data": {
+        "id": "2001",
+        "username": "company_abc",
+        "name": "Công ty ABC", // Tên người đại diện hoặc tên hiển thị chung
+        "address": "Đà Nẵng",
+        "phone": "0236123456",
+        "avatar": "https://api.mysite.com/uploads/logos/c2001.png",
+        "userType": "Employer",
+        "employerType": "Company",
+        "specificData": {
+            "taxNumber": "0123456789", // Read-only (không thay đổi)
+            "website": "https://abc.com",
+            "size": "50-100",
+            "industry": "Information Technology",
+            "foundedDate": "2015-01-01",
+            "country": "Vietnam"
+        }
+    },
+    "error": null
+}
+{
+    "message": "Cập nhật hồ sơ nhà tuyển dụng cá nhân thành công",
+    "data": {
+        "id": "2002",
+        "username": "tuyendung_hn",
+        "name": "Nguyễn Văn Tuyển Dụng",
+        "address": "Hà Nội",
+        "phone": "0912345678",
+        "avatar": "https://api.mysite.com/uploads/avatars/u2002.jpg",
+        "userType": "Employer",
+        "employerType": "Person",
+        "specificData": {
+            "dob": "1995-05-05",
+            "ssn": "001234567890",
+            "socialLink": "https://fb.com/tuyendung"
+        }
+    },
+    "error": null
+}
+
+// Error Response
+HTTP Status: 400 Bad Request
+{
+    "message": "Dữ liệu đầu vào không hợp lệ",
+    "data": null,
+    "error": {
+        "code": "VALIDATION_ERROR",
+        "details": [
+            {
+                "field": "dob",
+                "message": "Ứng viên phải từ 18 tuổi trở lên (DOB <= 2007-xx-xx)"
+            },
+            {
+                "field": "specificData.website",
+                "message": "Đường dẫn website không hợp lệ"
+            }
+        ]
+    }
+}
+
+HTTP Status: 403 Forbidden
+{
+    "message": "Bạn không có quyền thay đổi Mã số thuế sau khi đã xác thực.",
+    "data": null,
+    "error": {
+        "code": "FIELD_READONLY",
+        "details": "Field 'taxNumber' cannot be modified."
+    }
+}
+
+HTTP Status: 409 Conflict
+{
+    "message": "Cập nhật thất bại. Số căn cước công dân (SSN) đã tồn tại trong hệ thống.",
+    "data": null,
+    "error": {
+        "code": "DUPLICATE_ENTRY",
+        "details": "SSN '079098765432' is already used by another user."
+    }
 }
 ```
 
@@ -650,46 +851,6 @@ POST /api/v1/companies
 }
 ```
 
-#### **Endpoint: /employers/me**
-  - **Mô tả:** Cập nhật thông tin hồ sơ nhà tuyển dụng. Endpoint này xử lý cập nhật đồng thời thông tin cá nhân (bảng `PERSON`) và thông tin công ty (bảng `COMPANY`) nếu Employer đó là đại diện quản lý của công ty.
-  - **Auth:** Required (Role: Employer).
-  - **Ràng buộc:**
-    - `companyInfo` chỉ được cập nhật nếu Employer đã liên kết với một công ty.
-    - Các trường như `email` thường không cho phép đổi tại đây (phải qua quy trình riêng).
-  - **Request Body:**
-
-```json
-PUT /api/v1/employers/me
-{
-    "name": "Trần Văn Tuyển Dụng", // Update bảng Person
-    "phone": "0912345678",
-    "address": "Tầng 5, Tòa nhà ABC, Hà Nội",
-    "companyInfo": { // Optional: Chỉ update nếu đã có companyId
-        "name": "Tech Solutions Inc.",
-        "website": "https://new-domain.com",
-        "size": "500-1000"
-    }
-}
-```
-
-  - **Response (Success):**
-
-```json
-{
-    "message": "Cập nhật hồ sơ nhà tuyển dụng thành công",
-    "data": {
-        "employerId": "2002",
-        "name": "Trần Văn Tuyển Dụng",
-        "company": {
-            "id": "202",
-            "name": "Tech Solutions Inc.",
-            "website": "https://new-domain.com"
-        }
-    },
-    "error": null
-}
-```
-
 #### **Endpoint: /employers/:id**
 
   - **Mô tả:** Lấy thông tin chi tiết công khai của một nhà tuyển dụng (hoặc công ty). Dùng để hiển thị trang chi tiết công ty/nhà tuyển dụng cho ứng viên xem.
@@ -759,10 +920,6 @@ GET /api/v1/employers/2002/followers
 -----
 
 ### 4.5\. Module Jobs (Việc làm)
-
-Dựa trên danh sách yêu cầu của bạn và template mẫu, dưới đây là mô tả chi tiết cho các API thuộc module **Jobs**.
-
-*Lưu ý: Các endpoint dưới đây được viết chính xác theo đường dẫn bạn cung cấp trong yêu cầu (`/post`, `/update`, `/delete`).*
 
 #### **Endpoint: /jobs**
 
