@@ -1,0 +1,21 @@
+services:
+  sql_server:
+    container_name: sql_server
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    restart: always
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=admin@123
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data_vol:/var/opt/mssql
+      - ./scripts:/scripts
+    entrypoint: /scripts/init.sh
+
+volumes:
+  sql_data_vol:
+
+# docker compose down to stop and remove containers not delete volumes: ko xóa dữ liệu 
+# docker compose down -v to stop and remove containers and delete: xóa tất cả dữ liệu phải chaỵ lại tất cả scripts từ đầu
