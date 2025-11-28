@@ -30,8 +30,9 @@ BEGIN
         ProfilePic NVARCHAR(MAX),
         Bio NVARCHAR(MAX),
         UserType NVARCHAR(50),
-        SSN VARCHAR(20) UNIQUE,
-        DOB DATE
+        SSN VARCHAR(20),
+        DOB DATE,
+        CONSTRAINT CK_User_Type CHECK (UserType IN ('Candidate', 'Employer'))
     );
     PRINT 'Table [USER] created.';
 END
@@ -41,10 +42,11 @@ GO
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PERSON]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[PERSON] (
-        ID INT PRIMARY KEY,
-        SSN VARCHAR(20),
+        SSN VARCHAR(20) PRIMARY KEY,
         DOB DATE,
-        FOREIGN KEY (ID) REFERENCES [USER](ID) ON DELETE CASCADE
+        ID INT,
+        FOREIGN KEY (ID) REFERENCES [USER](ID) ON DELETE CASCADE,
+        CONSTRAINT CK_Person_Age CHECK (DATEDIFF(YEAR, DOB, GETDATE()) >= 18)
     );
     PRINT 'Table [PERSON] created.';
 END
@@ -54,14 +56,22 @@ GO
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[COMPANY]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[COMPANY] (
-        ID INT PRIMARY KEY,   -- error
-        TaxNumber NVARCHAR(50),  -- error
+        TaxNumber VARCHAR(13) PRIMARY KEY,
         FoundedDate DATE,
         Industry NVARCHAR(100),
         Size NVARCHAR(50),
         Country NVARCHAR(100),
         Website NVARCHAR(255),
-        FOREIGN KEY (ID) REFERENCES [USER](ID) ON DELETE CASCADE
+        ID INT,
+        FOREIGN KEY (ID) REFERENCES [USER](ID) ON DELETE CASCADE,
+        CONSTRAINT CK_Company_Taxnumber CHECK (
+            TaxNumber LIKE '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'  -- 10 digits
+            OR
+            TaxNumber LIKE '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'  -- 13 digits
+        ),
+        CONSTRAINT CK_Company_Website CHECK (
+            Website LIKE 'http://%' OR Website LIKE 'https://%'
+        )
     );
     PRINT 'Table [COMPANY] created.';
 END
@@ -106,7 +116,8 @@ BEGIN
         ContractType NVARCHAR(50),
         JobType NVARCHAR(50),
         ID INT,
-        FOREIGN KEY (ID) REFERENCES [USER](ID)
+        FOREIGN KEY (ID) REFERENCES [USER](ID),
+        CONSTRAINT CK_Job_ExpireDate CHECK (ExpireDate > PostDate)
     );
     PRINT 'Table [JOB] created.';
 END
@@ -116,12 +127,13 @@ GO
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[JOB_HISTORY]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[JOB_HISTORY] (
-        HistoryID INT PRIMARY KEY IDENTITY(1,1),
+        HistoryID INT IDENTITY(1,1),
         CandidateID INT,
         Position NVARCHAR(100),
         ComName NVARCHAR(255),
         StartTime DATETIME,
         EndTime DATETIME,
+        PRIMARY KEY (CandidateID, HistoryID),
         FOREIGN KEY (CandidateID) REFERENCES [USER](ID)
     );
     PRINT 'Table [JOB_HISTORY] created.';
@@ -137,7 +149,6 @@ BEGIN
         SendTime DATETIME DEFAULT GETDATE(),
         ReadTime DATETIME,
         Content NVARCHAR(MAX),
-        [Status] NVARCHAR(50),
         FOREIGN KEY (SenderID) REFERENCES [USER](ID),
         FOREIGN KEY (ReceiverID) REFERENCES [USER](ID)
     );
@@ -166,7 +177,7 @@ BEGIN
         SSN VARCHAR(20),
         Link NVARCHAR(255),
         PRIMARY KEY (SSN, Link),
-        FOREIGN KEY (SSN) REFERENCES [USER](SSN)
+        FOREIGN KEY (SSN) REFERENCES [PERSON](SSN)
     );
     PRINT 'Table [SOCIAL_LINK] created.';
 END
@@ -198,7 +209,8 @@ BEGIN
         [Status] NVARCHAR(50),
         PRIMARY KEY (ID, JobID),
         FOREIGN KEY (ID) REFERENCES [USER](ID),
-        FOREIGN KEY (JobID) REFERENCES JOB(JobID)
+        FOREIGN KEY (JobID) REFERENCES JOB(JobID),
+        CONSTRAINT CK_Apply_Status CHECK (Status IS NULL OR Status IN (N'Chờ duyệt', N'Đã nhận', N'Từ chối')),
     );
     PRINT 'Table [APPLY] created.';
 END
@@ -288,7 +300,8 @@ BEGIN
         [Rank] INT,
         PRIMARY KEY (ID, JobID),
         FOREIGN KEY (ID) REFERENCES [USER](ID),
-        FOREIGN KEY (JobID) REFERENCES JOB(JobID)
+        FOREIGN KEY (JobID) REFERENCES JOB(JobID),
+        CONSTRAINT CK_FeedBack_Rank CHECK ([Rank] BETWEEN 1 AND 5)
     );
     PRINT 'Table [FEEDBACK] created.';
 END
@@ -296,4 +309,4 @@ END
 
 
 
--- Insert data statements can be added here as needed.
+-- Insert data if this type of data cannot be changed (static data)
