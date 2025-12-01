@@ -206,7 +206,7 @@ BEGIN
         [Date] DATETIME DEFAULT GETDATE(),
         CoverLetter NVARCHAR(MAX),
         CV NVARCHAR(MAX),
-        [Status] NVARCHAR(50),
+        [Status] NVARCHAR(50) DEFAULT N'Chờ duyệt',
         PRIMARY KEY (ID, JobID),
         FOREIGN KEY (ID) REFERENCES [USER](ID),
         FOREIGN KEY (JobID) REFERENCES JOB(JobID),
@@ -228,7 +228,7 @@ BEGIN
         [Timestamp] DATETIME DEFAULT GETDATE(),
         FOREIGN KEY (CandidateID) REFERENCES [USER](ID),
         FOREIGN KEY (EmployerID) REFERENCES [USER](ID),
-        FOREIGN KEY (JobID) REFERENCES JOB(JobID)
+        FOREIGN KEY (JobID) REFERENCES JOB(JobID) ON DELETE CASCADE
     );
     PRINT 'Table [NOTIFY] created.';
 END
