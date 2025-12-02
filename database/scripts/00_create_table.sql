@@ -13,32 +13,34 @@ GO
 USE JobRecruitmentDB;
 GO
 
+-- =============================================
 -- 2. Main Entity: USERS
+-- =============================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[USER]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[USER] (
         ID INT PRIMARY KEY IDENTITY(1,1), 
--- IDENTITY(seed, increment)
--- seed = giá trị bắt đầu (ở đây là 1)
--- increment = bước nhảy mỗi lần chèn (ở đây là 1)
         Username NVARCHAR(100) NOT NULL UNIQUE,
         [Password] NVARCHAR(255) NOT NULL,
         Email NVARCHAR(255) NOT NULL UNIQUE,
         PhoneNum NVARCHAR(20),
         Name NVARCHAR(255),
-        [Address] NVARCHAR(MAX),
-        ProfilePic NVARCHAR(MAX),
+        [Address] NVARCHAR(255),
+        ProfilePic NVARCHAR(255),
         Bio NVARCHAR(MAX),
         UserType NVARCHAR(50),
         SSN VARCHAR(20),
         DOB DATE,
-        CONSTRAINT CK_User_Type CHECK (UserType IN ('Candidate', 'Employer'))
+        CONSTRAINT CK_User_Type CHECK (UserType IN ('Candidate', 'Employer')),
+        CONSTRAINT CK_User_Age CHECK (DATEDIFF(YEAR, DOB, GETDATE()) >= 18)
     );
     PRINT 'Table [USER] created.';
 END
 GO
 
+-- =============================================
 -- 3. Subtype: PERSON
+-- =============================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PERSON]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[PERSON] (
@@ -52,7 +54,9 @@ BEGIN
 END
 GO
 
+-- =============================================
 -- 4. Subtype: COMPANY
+-- =============================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[COMPANY]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[COMPANY] (
@@ -71,36 +75,43 @@ BEGIN
         ),
         CONSTRAINT CK_Company_Website CHECK (
             Website LIKE 'http://%' OR Website LIKE 'https://%'
-        )
+        ),
+        CONSTRAINT CK_Company_FoundedDate CHECK (FoundedDate <= GETDATE())
     );
     PRINT 'Table [COMPANY] created.';
 END
 GO
 
+-- =============================================
 -- 5. Independent Entity: JOB_CATEGORY
+-- =============================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[JOB_CATEGORY]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[JOB_CATEGORY] (
-        JCName NVARCHAR(100) PRIMARY KEY, -- tên danh mục công việc
+        JCName NVARCHAR(100) PRIMARY KEY, 
         Speciality NVARCHAR(255)
     );
     PRINT 'Table [JOB_CATEGORY] created.';
 END
 GO
 
+-- =============================================
 -- 6. Independent Entity: SKILL
+-- =============================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SKILL]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[SKILL] (
         SkillID INT PRIMARY KEY IDENTITY(1,1),
-        SkillName NVARCHAR(100),
+        SkillName NVARCHAR(100) UNIQUE NOT NULL,
         SDescription NVARCHAR(MAX)
     );
     PRINT 'Table [SKILL] created.';
 END
 GO
 
+-- =============================================
 -- 7. Main Entity: JOB
+-- =============================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[JOB]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[JOB] (
@@ -117,13 +128,17 @@ BEGIN
         JobType NVARCHAR(50),
         ID INT,
         FOREIGN KEY (ID) REFERENCES [USER](ID),
-        CONSTRAINT CK_Job_ExpireDate CHECK (ExpireDate > PostDate)
+        CONSTRAINT CK_Job_ExpireDate CHECK (ExpireDate > PostDate),
+        CONSTRAINT CK_Job_Salary CHECK (Salary >= 0),
+        CONSTRAINT CK_Job_Quantity CHECK (Quantity >= 0)
     );
     PRINT 'Table [JOB] created.';
 END
 GO
 
+-- =============================================
 -- 8. JOB_HISTORY
+-- =============================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[JOB_HISTORY]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[JOB_HISTORY] (
@@ -134,13 +149,16 @@ BEGIN
         StartTime DATETIME,
         EndTime DATETIME,
         PRIMARY KEY (CandidateID, HistoryID),
-        FOREIGN KEY (CandidateID) REFERENCES [USER](ID)
+        FOREIGN KEY (CandidateID) REFERENCES [USER](ID),
+        CONSTRAINT CK_JobHistory_EndTime CHECK (EndTime > StartTime OR EndTime IS NULL)
     );
     PRINT 'Table [JOB_HISTORY] created.';
 END
 GO
 
+-- =============================================
 -- 9. MESSAGE
+-- =============================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[MESSAGE]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[MESSAGE] (
@@ -156,7 +174,9 @@ BEGIN
 END
 GO
 
+-- =============================================
 -- 10. SENDMSG
+-- =============================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SENDMSG]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[SENDMSG] (
@@ -170,7 +190,9 @@ BEGIN
 END
 GO
 
+-- =============================================
 -- 11. SOCIAL_LINK
+-- =============================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SOCIAL_LINK]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[SOCIAL_LINK] (
@@ -183,7 +205,9 @@ BEGIN
 END
 GO
 
+-- =============================================
 -- 12. FOLLOW
+-- =============================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[FOLLOW]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[FOLLOW] (
@@ -197,15 +221,17 @@ BEGIN
 END
 GO
 
+-- =============================================
 -- 13. APPLY
+-- =============================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[APPLY]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[APPLY] (
         ID INT,
         JobID INT,
         [Date] DATETIME DEFAULT GETDATE(),
-        CoverLetter NVARCHAR(MAX),
-        CV NVARCHAR(MAX),
+        CoverLetter NVARCHAR(255),
+        CV NVARCHAR(255),
         [Status] NVARCHAR(50) DEFAULT N'Chờ duyệt',
         PRIMARY KEY (ID, JobID),
         FOREIGN KEY (ID) REFERENCES [USER](ID),
@@ -216,7 +242,9 @@ BEGIN
 END
 GO
 
+-- =============================================
 -- 14. NOTIFY
+-- =============================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[NOTIFY]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[NOTIFY] (
@@ -234,7 +262,9 @@ BEGIN
 END
 GO
 
+-- =============================================
 -- 15. REQUIRE
+-- =============================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[REQUIRE]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[REQUIRE] (
@@ -248,7 +278,9 @@ BEGIN
 END
 GO
 
+-- =============================================
 -- 16. RELATE
+-- =============================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[RELATE]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[RELATE] (
@@ -262,7 +294,9 @@ BEGIN
 END
 GO
 
+-- =============================================
 -- 17. IN
+-- =============================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[IN]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[IN] (
@@ -276,7 +310,9 @@ BEGIN
 END
 GO
 
+-- =============================================
 -- 18. OWN
+-- =============================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[OWN]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[OWN] (
@@ -290,7 +326,9 @@ BEGIN
 END
 GO
 
+-- =============================================
 -- 19. FEEDBACK
+-- =============================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[FEEDBACK]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[FEEDBACK] (
@@ -305,8 +343,4 @@ BEGIN
     );
     PRINT 'Table [FEEDBACK] created.';
 END
-
-
-
-
--- Insert data if this type of data cannot be changed (static data)
+GO
