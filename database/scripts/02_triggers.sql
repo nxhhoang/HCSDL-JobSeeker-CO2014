@@ -26,33 +26,6 @@ BEGIN
 END;
 GO
 
--- 1 người chỉ được apply vào 1 job 1 lần
-CREATE OR ALTER TRIGGER trg_PreventDuplicateApply
-ON [dbo].[APPLY]
-INSTEAD OF INSERT
-AS 
-BEGIN
-    SET NOCOUNT ON;
-
-    IF EXISTS (
-        SELECT 1
-        FROM INSERTED i
-        JOIN [dbo].[APPLY] a ON i.ID = a.ID AND i.JobID = a.JobID
-    )
-    BEGIN
-        RAISERROR ('Error: You have already applied for this job.', 16, 1);
-        ROLLBACK TRANSACTION;
-        RETURN;
-    END
-
-    -- Nếu không trùng, thực hiện chèn bình thường
-    INSERT INTO [dbo].[APPLY] (ID, JobID, Date, CoverLetter, CV, [Status])
-    SELECT ID, JobID, Date, CoverLetter, CV, [Status]
-    FROM INSERTED;
-END;
-GO
-
-
 -- thông báo cho những follower của employer khi mà người đó đăng job mới
 CREATE OR ALTER TRIGGER trg_NotifyFollowersOnNewJob
 ON [dbo].[JOB]
