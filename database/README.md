@@ -21,7 +21,7 @@
 
   | Mục                | Ví dụ điền                                           |
   | ------------------ | ---------------------------------------------------- |
-  | **Server name**    | `localhost,1433` hoặc `127.0.0.1,1433`               |
+  | **Server name**    | `127.0.0.1,1433`                                     |
   | **Authentication** | `SQL Login`                                          |
   | **Username**       | `sa`                                                 |
   | **Password**       | `admin@123`                                          |
