@@ -69,5 +69,3 @@ export const METADATA_MESSAGES = {
   GET_SKILLS_SUCCESS: 'Successfully retrieved skills list',
   GET_CATEGORIES_SUCCESS: 'Successfully retrieved categories list'
 } as const
-
-

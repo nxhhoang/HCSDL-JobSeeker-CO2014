@@ -1,5 +1,5 @@
 import { Request } from 'express'
-import { JsonWebTokenError } from 'jsonwebtoken'
+import { JsonWebTokenError } from 'jsonwebtoken' 
 import { capitalize } from 'lodash'
 import { envConfig } from '~/constants/config'
 import HTTP_STATUS from '~/constants/httpStatus'
@@ -10,6 +10,7 @@ import { verifyToken } from '~/utils/jwt'
 export const numberEnumToArray = (numberEnum: { [key: string]: string | number }) => {
   return Object.values(numberEnum).filter((value) => typeof value === 'number') as number[]
 }
+
 export const verifyAccessToken = async (access_token: string, req?: Request) => {
   if (!access_token) {
     throw new ErrorWithStatus({
@@ -22,6 +23,7 @@ export const verifyAccessToken = async (access_token: string, req?: Request) => 
       token: access_token,
       secretOrPublicKey: envConfig.jwtSecretAccessToken
     })
+
     if (req) {
       ;(req as Request).decoded_authorization = decoded_authorization
       return true

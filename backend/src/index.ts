@@ -1,9 +1,14 @@
 import databaseService from '~/services/database.services'
 import { envConfig, isProduction } from '~/constants/config'
 import cors, { CorsOptions } from 'cors'
+import { createServer } from 'http'
+import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
 import express from 'express'
 import metadataRouter from './routes/metadata.routes'
+import initSocket from './utils/socket'
+import authRouter from './routes/auth.routes'
+import usersRouter from './routes/users.routes'
 
 const app = express()
 const limiter = rateLimit({
@@ -15,15 +20,22 @@ const limiter = rateLimit({
 })
 app.use(limiter)
 
+const httpServer = createServer(app)
+app.use(helmet())
 const corsOptions: CorsOptions = {
   origin: isProduction ? envConfig.clientUrl : '*'
 }
 app.use(cors(corsOptions))
 app.use(express.json())
+
 app.use('/api/v1', metadataRouter)
+app.use('/api/v1/auth', authRouter)
+app.use('/api/v1/users', usersRouter)
+
+initSocket(httpServer)
 
 databaseService.connect().then(() => {
-  app.listen(envConfig.port, () => {
+  httpServer.listen(envConfig.port, () => {
     console.log(`App is listening on port ${envConfig.port}`)
   })
 })
