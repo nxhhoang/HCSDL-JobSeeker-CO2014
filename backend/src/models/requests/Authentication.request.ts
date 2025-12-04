@@ -55,3 +55,10 @@ export interface ResetPasswordReqBody {
   otpCode: string
   newPassword: string
 }
+
+/**
+ * Endpoint: /auth/logout
+ */
+export interface LogoutReqBody {
+  refreshToken: string
+}

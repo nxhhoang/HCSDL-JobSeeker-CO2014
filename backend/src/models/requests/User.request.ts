@@ -2,6 +2,24 @@
    2.2 MODULE USERS (Người dùng chung)
 ============================================== */
 
+import { TokenType, UserRole, UserVerifyStatus } from '~/constants/enums'
+import { JwtPayload } from 'jsonwebtoken'
+
+interface PersonSpecifics {
+  ssn?: string
+  dob?: string // Khi gửi JSON lên thì Date thường là string (ISO8601)
+}
+
+interface CompanySpecifics {
+  taxNumber?: string
+  website?: string
+  size?: string
+  industry?: string
+  foundedDate?: string
+  country?: string
+  socialLink?: string
+}
+
 /**
  * Endpoint: /users/me
  * Method: PUT
@@ -13,21 +31,22 @@ export interface UpdateUserReqBody {
   address?: string
   phone?: string
   avatar?: string
+  date_of_birth?: string
+  bio?: string
+
   // Candidate fields
   dob?: string // Format: YYYY-MM-DD
   ssn?: string // Căn cước công dân
   // Employer fields
+  userType?: UserRole
   employerType?: 'Company' | 'Person'
-  specificData?: {
-    // For Company
-    website?: string
-    size?: string
-    industry?: string
-    foundedDate?: string
-    country?: string
-    // For Person
-    socialLink?: string
-    // Shared specific fields
-    taxNumber?: string // Read-only thường không gửi lên nhưng define cho đầy đủ
-  }
+  specificData?: PersonSpecifics & CompanySpecifics
+}
+
+export interface TokenPayload extends JwtPayload {
+  user_id: string
+  token_type: TokenType
+  verify: UserVerifyStatus
+  exp: number
+  iat: number
 }

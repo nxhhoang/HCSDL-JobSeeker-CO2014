@@ -48,7 +48,8 @@ export enum PeopleFollow {
 
 export enum UserRole {
   Candidate = 'Candidate',
-  Employer = 'Employer'
+  Employer = 'Employer',
+  Admin = 'Admin'
 }
 
 export enum ApplyStatus {
