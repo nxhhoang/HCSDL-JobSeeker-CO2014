@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { RegisterReqBody, LoginReqBody } from '~/models/requests/Authentication.request'
+import { RegisterReqBody, LoginReqBody, LogoutReqBody } from '~/models/requests/Authentication.request'
 import databaseService, { sql } from '~/services/database.services'
 import { UserVerifyStatus, TokenType } from '~/constants/enums'
 import { signToken } from '~/utils/jwt'
@@ -105,6 +105,12 @@ class AuthService {
         userType: user.UserType
       }
     }
+  }
+
+  async logout(payload: LogoutReqBody) {
+    // Không làm gì cả vì không có chỗ lưu để mà xóa
+    // Chỉ đơn giản trả về thành công để Frontend biết mà tự xóa client-side
+    return { message: USERS_MESSAGES.LOGOUT_SUCCESS }
   }
 }
 

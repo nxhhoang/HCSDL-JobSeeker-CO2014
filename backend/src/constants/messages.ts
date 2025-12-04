@@ -90,5 +90,7 @@ export const JOBS_MESSAGES = {
   CREATE_JOB_SUCCESS: 'Đăng tin tuyển dụng thành công',
   UPDATE_JOB_SUCCESS: 'Cập nhật tin tuyển dụng thành công',
   DELETE_JOB_SUCCESS: 'Đã đóng tin tuyển dụng thành công',
-  RELATE_JOB_SUCCESS: 'Gắn job liên quan thành công'
+  RELATE_JOB_SUCCESS: 'Gắn job liên quan thành công',
+  GET_MY_JOBS_SUCCESS: 'Successfully retrieved posted jobs list',
+  GET_RELATED_JOBS_SUCCESS: 'Successfully retrieved related jobs list'
 } as const

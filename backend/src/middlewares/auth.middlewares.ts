@@ -85,7 +85,7 @@ export const refreshTokenValidator = validate(
     {
       refreshToken: {
         notEmpty: { errorMessage: USERS_MESSAGES.REFRESH_TOKEN_IS_REQUIRED },
-        isString: true
+        isString: { errorMessage: USERS_MESSAGES.REFRESH_TOKEN_IS_INVALID }
       }
     },
     ['body']

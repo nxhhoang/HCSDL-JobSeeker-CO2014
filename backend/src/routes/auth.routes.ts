@@ -1,7 +1,12 @@
 import { Router } from 'express'
 // import { loginController, registerController, verifyOtpController } from '~/controllers/auth.controllers'
-import { loginController, registerController } from '~/controllers/auth.controllers'
-import { loginValidator, registerValidator } from '~/middlewares/auth.middlewares'
+import { loginController, registerController, logoutController } from '~/controllers/auth.controllers'
+import {
+  loginValidator,
+  registerValidator,
+  accessTokenValidator,
+  refreshTokenValidator
+} from '~/middlewares/auth.middlewares' // Import thêm refreshTokenValidator, accessTokenValidator
 import { wrapRequestHandler } from '~/utils/handlers'
 
 const authRouter = Router()
@@ -23,5 +28,7 @@ authRouter.post('/login', loginValidator, wrapRequestHandler(loginController))
 //  * Method: POST
 //  */
 // authRouter.post('/verify-otp', wrapRequestHandler(verifyOtpController))
+
+authRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapRequestHandler(logoutController))
 
 export default authRouter
