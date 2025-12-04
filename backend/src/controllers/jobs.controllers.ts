@@ -27,8 +27,8 @@ export const updateJobController = async (req: Request, res: Response) => {
 }
 
 export const deleteJobController = async (req: Request, res: Response) => {
-  const { user_id, userType } = req.decoded_authorization as TokenPayload
-  await jobsService.deleteJob(user_id, userType as UserRole, req.params.id)
+  const { user_id, role } = req.decoded_authorization as TokenPayload
+  await jobsService.deleteJob(user_id, role as UserRole, req.params.id)
   return res.json({ message: JOBS_MESSAGES.DELETE_JOB_SUCCESS, data: true })
 }
 

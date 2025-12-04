@@ -12,6 +12,8 @@ import usersRouter from './routes/users.routes'
 import candidatesRouter from './routes/candidates.routes'
 import employersRouter, { companiesRouter } from './routes/employers.routes'
 import jobsRouter from './routes/jobs.routes'
+import applicationsRouter from './routes/applications.routes'
+import interactionsRouter from './routes/interactions.routes'
 
 const app = express()
 const limiter = rateLimit({
@@ -38,6 +40,8 @@ app.use('/api/v1/candidates', candidatesRouter)
 app.use('/api/v1/employers', employersRouter)
 app.use('/api/v1/companies', companiesRouter)
 app.use('/api/v1/jobs', jobsRouter)
+app.use('/api/v1/application', applicationsRouter)
+app.use('/api/v1/interaction', interactionsRouter)
 
 initSocket(httpServer)
 

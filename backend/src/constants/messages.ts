@@ -94,3 +94,21 @@ export const JOBS_MESSAGES = {
   GET_MY_JOBS_SUCCESS: 'Successfully retrieved posted jobs list',
   GET_RELATED_JOBS_SUCCESS: 'Successfully retrieved related jobs list'
 } as const
+
+export const APPLICATIONS_MESSAGES = {
+  APPLY_JOB_SUCCESS: 'Nộp hồ sơ ứng tuyển thành công',
+  GET_MY_APPLIES_SUCCESS: 'Lấy lịch sử ứng tuyển thành công',
+  GET_JOB_APPLIES_SUCCESS: 'Lấy danh sách ứng viên thành công',
+  UPDATE_APPLY_STATUS_SUCCESS: 'Cập nhật trạng thái hồ sơ thành công',
+  DELETE_APPLY_SUCCESS: 'Đã rút hồ sơ thành công'
+} as const
+
+export const INTERACTIONS_MESSAGES = {
+  FOLLOW_SUCCESS: 'Successfully followed the employer',
+  UNFOLLOW_SUCCESS: 'Unfollowed successfully',
+  SEND_FEEDBACK_SUCCESS: 'Feedback submitted successfully',
+  GET_MESSAGES_SUCCESS: 'Retrieved message history successfully',
+  SEND_MESSAGE_SUCCESS: 'Message sent successfully',
+  GET_NOTIFICATIONS_SUCCESS: 'Retrieved notifications successfully',
+  READ_NOTIFICATION_SUCCESS: 'Marked as read successfully'
+} as const
