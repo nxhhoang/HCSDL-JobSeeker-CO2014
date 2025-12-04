@@ -94,3 +94,28 @@ BEGIN
         CASE WHEN @SortCriteria = 'SALARY' THEN AVG(J.Salary) END DESC;
 END;
 GO
+
+USE JobRecruitmentDB;
+GO
+
+-- Stored Procedure: Thống kê hệ thống (Requirement 3: Call Function/Procedure)
+CREATE OR ALTER PROCEDURE sp_GetSystemStats
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    -- Tính toán các chỉ số
+    DECLARE @TotalUsers INT = (SELECT COUNT(*) FROM [USER]);
+    DECLARE @TotalJobs INT = (SELECT COUNT(*) FROM [JOB]);
+    DECLARE @TotalApplies INT = (SELECT COUNT(*) FROM [APPLY]);
+    -- Tính trung bình rating từ bảng FEEDBACK (xử lý NULL nếu chưa có data)
+    DECLARE @AvgCompanyRating DECIMAL(5,2) = (SELECT ISNULL(AVG(CAST([Rank] AS DECIMAL(5,2))), 0) FROM [FEEDBACK]);
+
+    -- Trả về result set
+    SELECT 
+        @TotalUsers as TotalUsers,
+        @TotalJobs as TotalJobs,
+        @TotalApplies as TotalApplies,
+        @AvgCompanyRating as AvgCompanyRating;
+END;
+GO

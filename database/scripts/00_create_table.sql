@@ -31,7 +31,7 @@ BEGIN
         UserType NVARCHAR(50),
         SSN VARCHAR(20),
         DOB DATE,
-        CONSTRAINT CK_User_Type CHECK (UserType IN ('Candidate', 'Employer')),
+        CONSTRAINT CK_User_Type CHECK (UserType IN ('Candidate', 'Employer', 'Admin')),
         CONSTRAINT CK_User_Age CHECK (DATEDIFF(YEAR, DOB, GETDATE()) >= 18)
     );
     PRINT 'Table [USER] created.';

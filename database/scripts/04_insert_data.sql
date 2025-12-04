@@ -44,6 +44,8 @@ BEGIN TRY
     -- ID 1-30: Candidate
     -- ID 31-45: Individual Employer
     -- ID 46-60: Company Employer
+
+    -- ID 61: Admin (sManager)
     INSERT INTO [dbo].[USER] (Username, [Password], Email, PhoneNum, Name, [Address], UserType, Bio, SSN, DOB) VALUES 
     -- TEAM CANDIDATE (1-30)
     (N'cand_dev1', N'123', N'dev1@mail.com', N'0901', N'Nguyễn Văn An', N'HCM', 'Candidate', N'Fullstack Java', 'C001', '1998-01-01'),
@@ -109,7 +111,11 @@ BEGIN TRY
     (N'comp_bosch', N'123', N'hr@bosch.com', N'0292', N'Bosch', N'Tân Bình', 'Employer', N'Eng', NULL, NULL),
     (N'comp_hpg', N'123', N'hr@hpg.com', N'0293', N'Hòa Phát', N'Hà Nội', 'Employer', N'Steel', NULL, NULL),
     (N'comp_vna', N'123', N'hr@vna.com', N'0294', N'VNA', N'Hà Nội', 'Employer', N'Airline', NULL, NULL),
-    (N'comp_thaco', N'123', N'hr@thaco.com', N'0295', N'THACO', N'Quảng Nam', 'Employer', N'Auto', NULL, NULL);
+    (N'comp_thaco', N'123', N'hr@thaco.com', N'0295', N'THACO', N'Quảng Nam', 'Employer', N'Auto', NULL, NULL),
+
+    -- ADMIN
+    (N'sManager', N'password', N'sManager', N'sManager', N'sManager', N'JobSeeker', 'Admin', N'Super User', 'C000', 
+    '1111-01-01');
 
     -- 4. INSERT PERSON & COMPANY DETAILS
     -- INSERT INTO [dbo].[PERSON] (SSN, ID, DOB) SELECT SSN, ID, DOB FROM [dbo].[USER] WHERE ID BETWEEN 31 AND 45;
@@ -280,7 +286,7 @@ BEGIN TRY
     (10, 20, N'Chờ duyệt', GETDATE()),   -- Brand Manager
     -- Các Job lao động phổ thông
     (17, 26, N'Đã nhận', '2023-10-15'), -- Thợ sửa xe -> Phụ gara (Job 26)
-    (18, 23, N'Đã nhận', '2023-10-10'), -- Shipper -> Phục vụ (Job 23)
+    (18, 23, N'Chờ duyệt', '2023-10-10'), -- Shipper -> Phục vụ (Job 23)
     (20, 38, N'Chờ duyệt', GETDATE()),   -- Bán hàng -> Thu ngân (Job 38)
     (15, 34, N'Từ chối', '2023-09-01'); -- Gym PT -> KTV Spa (Job 34 - trái nghề)
 
