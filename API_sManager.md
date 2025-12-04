@@ -2,7 +2,7 @@
 
   * **Quy ước URL:** `/api/v1/admin/...`
   * **Authentication:** Bắt buộc. Header `Authorization: Bearer <token>`.
-  * **Authorization:** Chỉ User có Role là `sManager` (hoặc cờ `isAdmin=true`) mới được truy cập. Middleware sẽ chặn tất cả các role khác (Candidate/Employer).
+  * **Authorization:** Chỉ User có Role là `Admin` (hoặc cờ `isAdmin=true`) mới được truy cập. Middleware sẽ chặn tất cả các role khác (Candidate/Employer).
 
 #### Bảng tóm tắt các Endpoints
 

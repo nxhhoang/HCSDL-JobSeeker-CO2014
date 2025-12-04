@@ -52,3 +52,29 @@ BEGIN
     PRINT 'Notifications sent to followers of the employer.';
 END
 GO
+
+USE JobRecruitmentDB;
+GO
+
+CREATE OR ALTER TRIGGER trg_CascadeDeleteJob
+ON [dbo].[JOB]
+INSTEAD OF DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @DeletedJobIDs TABLE (JobID INT);
+    INSERT INTO @DeletedJobIDs (JobID) SELECT JobID FROM deleted;
+
+    -- Luôn xóa sạch dữ liệu liên quan để tránh lỗi Foreign Key
+    DELETE FROM [dbo].[REQUIRE] WHERE JobID IN (SELECT JobID FROM @DeletedJobIDs);
+    DELETE FROM [dbo].[IN] WHERE JobID IN (SELECT JobID FROM @DeletedJobIDs);
+    DELETE FROM [dbo].[RELATE] WHERE VJobID IN (SELECT JobID FROM @DeletedJobIDs) OR RJobID IN (SELECT JobID FROM @DeletedJobIDs);
+    DELETE FROM [dbo].[FEEDBACK] WHERE JobID IN (SELECT JobID FROM @DeletedJobIDs);
+    DELETE FROM [dbo].[NOTIFY] WHERE JobID IN (SELECT JobID FROM @DeletedJobIDs);
+    DELETE FROM [dbo].[APPLY] WHERE JobID IN (SELECT JobID FROM @DeletedJobIDs); -- Xóa hết đơn, kể cả Pending
+
+    -- Cuối cùng xóa Job
+    DELETE FROM [dbo].[JOB] WHERE JobID IN (SELECT JobID FROM @DeletedJobIDs);
+END;
+GO
