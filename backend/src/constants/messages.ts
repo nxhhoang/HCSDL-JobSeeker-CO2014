@@ -69,3 +69,26 @@ export const METADATA_MESSAGES = {
   GET_SKILLS_SUCCESS: 'Successfully retrieved skills list',
   GET_CATEGORIES_SUCCESS: 'Successfully retrieved categories list'
 } as const
+
+export const CANDIDATE_MESSAGES = {
+  GET_PROFILE_SUCCESS: 'Successfully retrieved candidate profile',
+  UPDATE_CV_SUCCESS: 'CV updated successfully',
+  ADD_JOB_HISTORY_SUCCESS: 'Job history added successfully',
+  GET_JOB_HISTORY_SUCCESS: 'Successfully retrieved job history',
+  UPDATE_SKILLS_SUCCESS: 'Skills updated successfully'
+} as const
+
+export const EMPLOYER_MESSAGES = {
+  CREATE_COMPANY_SUCCESS: 'Company profile created successfully',
+  GET_EMPLOYER_SUCCESS: 'Successfully retrieved employer information',
+  GET_FOLLOWERS_SUCCESS: 'Successfully retrieved list of followers'
+} as const
+
+export const JOBS_MESSAGES = {
+  GET_JOBS_SUCCESS: 'Tìm thấy kết quả phù hợp',
+  GET_JOB_DETAIL_SUCCESS: 'Lấy chi tiết việc làm thành công',
+  CREATE_JOB_SUCCESS: 'Đăng tin tuyển dụng thành công',
+  UPDATE_JOB_SUCCESS: 'Cập nhật tin tuyển dụng thành công',
+  DELETE_JOB_SUCCESS: 'Đã đóng tin tuyển dụng thành công',
+  RELATE_JOB_SUCCESS: 'Gắn job liên quan thành công'
+} as const

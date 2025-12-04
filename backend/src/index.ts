@@ -9,6 +9,9 @@ import metadataRouter from './routes/metadata.routes'
 import initSocket from './utils/socket'
 import authRouter from './routes/auth.routes'
 import usersRouter from './routes/users.routes'
+import candidatesRouter from './routes/candidates.routes'
+import employersRouter, { companiesRouter } from './routes/employers.routes'
+import jobsRouter from './routes/jobs.routes'
 
 const app = express()
 const limiter = rateLimit({
@@ -31,6 +34,10 @@ app.use(express.json())
 app.use('/api/v1', metadataRouter)
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/users', usersRouter)
+app.use('/api/v1/candidates', candidatesRouter)
+app.use('/api/v1/employers', employersRouter)
+app.use('/api/v1/companies', companiesRouter)
+app.use('/api/v1/jobs', jobsRouter)
 
 initSocket(httpServer)
 
