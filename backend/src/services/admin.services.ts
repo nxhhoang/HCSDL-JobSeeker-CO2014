@@ -4,11 +4,18 @@ import HTTP_STATUS from '~/constants/httpStatus'
 
 class AdminService {
   // Requirement 1 & 2: Data Retrieval (List Users with Filter/Sort/Pagination)
-  async getUsers(page: number, limit: number, role?: string, search?: string) {
+  // Thêm tham số sort vào hàm
+  async getUsers(
+    page: number,
+    limit: number,
+    role?: string,
+    search?: string,
+    sortBy: string = 'id',
+    order: string = 'desc'
+  ) {
     const pool = databaseService.connection
     const offset = (page - 1) * limit
 
-    // Query động để filter và search
     let query = `
       SELECT u.ID, u.Username, u.Email, u.Name, u.UserType, u.PhoneNum,
              CASE WHEN u.UserType = 'Employer' THEN c.TaxNumber ELSE NULL END as CompanyTaxNumber
@@ -17,12 +24,30 @@ class AdminService {
       WHERE 1=1
     `
 
-    // Add conditions
     if (role) query += ` AND u.UserType = @role`
     if (search) query += ` AND (u.Username LIKE @search OR u.Email LIKE @search OR u.Name LIKE @search)`
 
-    // Sort & Pagination
-    query += ` ORDER BY u.ID DESC OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY`
+    // --- XỬ LÝ SORT NÂNG CAO ---
+
+    // 1. Map các field cho phép sort để tránh SQL Injection
+    const sortMapping: Record<string, string> = {
+      id: 'u.ID',
+      name: 'u.Name',
+      email: 'u.Email',
+      username: 'u.Username',
+      role: 'u.UserType'
+    }
+
+    // 2. Lấy tên cột SQL, nếu user gửi linh tinh thì fallback về u.ID
+    const sortColumn = sortMapping[sortBy] || 'u.ID'
+
+    // 3. Chuẩn hóa chiều sort (chỉ chấp nhận ASC hoặc DESC)
+    const sortDirection = order.toLowerCase() === 'asc' ? 'ASC' : 'DESC'
+
+    // 4. Ghép vào Query
+    query += ` ORDER BY ${sortColumn} ${sortDirection} OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY`
+
+    // --- KẾT THÚC XỬ LÝ SORT ---
 
     const request = pool.request().input('offset', sql.Int, offset).input('limit', sql.Int, limit)
 
@@ -31,8 +56,8 @@ class AdminService {
 
     const result = await request.query(query)
 
-    // Get total count for pagination metadata
-    // Lưu ý: Cần query count riêng với cùng điều kiện filter để tính total page chính xác
+    // ... (Phần count giữ nguyên)
+    // Lưu ý: Phần countQuery không cần ORDER BY nên không cần sửa
     let countQuery = `SELECT COUNT(*) as total FROM [USER] u WHERE 1=1`
     if (role) countQuery += ` AND u.UserType = @role`
     if (search) countQuery += ` AND (u.Username LIKE @search OR u.Email LIKE @search)`
@@ -40,7 +65,6 @@ class AdminService {
     const countReq = pool.request()
     if (role) countReq.input('role', sql.NVarChar, role)
     if (search) countReq.input('search', sql.NVarChar, `%${search}%`)
-
     const countRes = await countReq.query(countQuery)
 
     return {
