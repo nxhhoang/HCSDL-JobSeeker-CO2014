@@ -85,23 +85,24 @@ export const EMPLOYER_MESSAGES = {
 } as const
 
 export const JOBS_MESSAGES = {
-  GET_JOBS_SUCCESS: 'Tìm thấy kết quả phù hợp',
-  GET_JOB_DETAIL_SUCCESS: 'Lấy chi tiết việc làm thành công',
-  CREATE_JOB_SUCCESS: 'Đăng tin tuyển dụng thành công',
-  UPDATE_JOB_SUCCESS: 'Cập nhật tin tuyển dụng thành công',
-  DELETE_JOB_SUCCESS: 'Đã đóng tin tuyển dụng thành công',
-  RELATE_JOB_SUCCESS: 'Gắn job liên quan thành công',
+  GET_JOBS_SUCCESS: 'Found matching results',
+  GET_JOB_DETAIL_SUCCESS: 'Successfully retrieved job details',
+  CREATE_JOB_SUCCESS: 'Job posting created successfully',
+  UPDATE_JOB_SUCCESS: 'Job posting updated successfully',
+  DELETE_JOB_SUCCESS: 'Job posting closed successfully',
+  RELATE_JOB_SUCCESS: 'Related job attached successfully',
   GET_MY_JOBS_SUCCESS: 'Successfully retrieved posted jobs list',
   GET_RELATED_JOBS_SUCCESS: 'Successfully retrieved related jobs list'
 } as const
 
 export const APPLICATIONS_MESSAGES = {
-  APPLY_JOB_SUCCESS: 'Nộp hồ sơ ứng tuyển thành công',
-  GET_MY_APPLIES_SUCCESS: 'Lấy lịch sử ứng tuyển thành công',
-  GET_JOB_APPLIES_SUCCESS: 'Lấy danh sách ứng viên thành công',
-  UPDATE_APPLY_STATUS_SUCCESS: 'Cập nhật trạng thái hồ sơ thành công',
-  DELETE_APPLY_SUCCESS: 'Đã rút hồ sơ thành công'
+  APPLY_JOB_SUCCESS: 'Applied successfully',
+  GET_MY_APPLIES_SUCCESS: 'Successfully retrieved application history',
+  GET_JOB_APPLIES_SUCCESS: 'Successfully retrieved candidate list',
+  UPDATE_APPLY_STATUS_SUCCESS: 'Application status updated successfully',
+  DELETE_APPLY_SUCCESS: 'Application withdrawn successfully'
 } as const
+
 
 export const INTERACTIONS_MESSAGES = {
   FOLLOW_SUCCESS: 'Successfully followed the employer',
@@ -111,4 +112,17 @@ export const INTERACTIONS_MESSAGES = {
   SEND_MESSAGE_SUCCESS: 'Message sent successfully',
   GET_NOTIFICATIONS_SUCCESS: 'Retrieved notifications successfully',
   READ_NOTIFICATION_SUCCESS: 'Marked as read successfully'
+} as const
+
+// --- ADDED ADMIN MESSAGES ---
+export const ADMIN_MESSAGES = {
+  GET_USERS_SUCCESS: 'Get users success',
+  DELETE_USER_SUCCESS: 'User deleted successfully',
+  GET_SYSTEM_STATS_SUCCESS: 'Get system stats success',
+  CREATE_SKILL_SUCCESS: 'Skill created',
+  UPDATE_SKILL_SUCCESS: 'Skill updated',
+  DELETE_SKILL_SUCCESS: 'Skill deleted',
+  CREATE_CATEGORY_SUCCESS: 'Category created',
+  UPDATE_CATEGORY_SUCCESS: 'Category updated',
+  DELETE_CATEGORY_SUCCESS: 'Category deleted'
 } as const
