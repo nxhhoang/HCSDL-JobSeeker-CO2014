@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  api:
+    container_name: jobseeker_backend
+    build: .
+    restart: always
+    ports:
+      - "${PORT:-4000}:${PORT:-4000}"
+    
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    
+    volumes:
+      - ./.env:/app/.env
+
+    environment:
+      - PORT=4000
+      - HOST=http://localhost
+      - NODE_ENV=production
+      
+      - DB_HOST=host.docker.internal
+      - DB_PORT=1433
+      
+      - DB_USER=sa
+      - DB_PASSWORD=admin@123 
+      - DB_NAME=JobRecruitmentDB
+      
+      - PASSWORD_SECRET=your-password-secret-key
+      - JWT_SECRET_ACCESS_TOKEN=your-access-token-secret
+      - JWT_SECRET_REFRESH_TOKEN=your-refresh-token-secret
+      - JWT_SECRET_EMAIL_VERIFY_TOKEN=your-email-verify-secret
+      - JWT_SECRET_FORGOT_PASSWORD_TOKEN=your-forgot-password-secret
+      - ACCESS_TOKEN_EXPIRES_IN=1d
+      - REFRESH_TOKEN_EXPIRES_IN=100d
