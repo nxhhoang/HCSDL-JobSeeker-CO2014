@@ -20,7 +20,7 @@ export default function Input<TFieldValues extends FieldValues = FieldValues>({
   rules,
   classNameInput = 'p-3 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm',
   classNameError = 'mt-1 text-red-600 min-h-[1.25rem] text-sm',
-  classNameEye = 'absolute top-[8px] right-[5px] h-5 w-5 cursor-pointer',
+  classNameEye = 'absolute top-1/2 -translate-y-1/2 right-[5px] h-5 w-5 cursor-pointer',
   ...rest
 }: Props<TFieldValues>) {
   const [openEye, setOpenEye] = useState(false)

@@ -75,7 +75,7 @@ export default function RegisterHeader() {
           </Link>
 
           {/* Right Section */}
-          <div className='flex items-center gap-3'>
+          {/* <div className='flex items-center gap-3'>
             <div className='hidden md:flex flex-col items-end'>
               <span className='text-sm text-gray-500'>
                 {isRegister ? 'Đã có tài khoản?' : 'Chưa có tài khoản?'}
@@ -90,7 +90,7 @@ export default function RegisterHeader() {
             <div className='text-xl font-bold text-gray-800 px-4 py-2 bg-white rounded-lg shadow-sm'>
               {isRegister ? 'Đăng ký' : 'Đăng nhập'}
             </div>
-          </div>
+          </div> */}
         </nav>
       </div>
     </header>
