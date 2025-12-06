@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jobseeker-frontend
+    ports:
+      - '3000:80'
+    restart: unless-stopped
+    networks:
+      - jobseeker-network
+    environment:
+      - NODE_ENV=production
+
+networks:
+  jobseeker-network:
+    driver: bridge
