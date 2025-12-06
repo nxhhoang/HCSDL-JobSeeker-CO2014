@@ -1,0 +1,12 @@
+node_modules
+dist
+.git
+.gitignore
+.vscode
+.storybook
+coverage
+*.md
+*.log
+.env.local
+.env.development
+.env.test
