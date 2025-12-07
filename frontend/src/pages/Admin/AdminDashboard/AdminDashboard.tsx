@@ -52,6 +52,14 @@ export default function AdminDashboard() {
       path: path.adminCategories,
       color: 'from-indigo-500 to-indigo-600'
     },
+    {
+      title: 'Metadata Management ⭐',
+      description: 'View Skills & Categories',
+      icon: '📊',
+      path: path.adminMetadata,
+      color: 'from-gradient-to-r from-blue-500 via-purple-500 to-pink-500',
+      badge: 'NEW'
+    },
     // {
     //   title: 'Application Management',
     //   description: 'View and manage applications',

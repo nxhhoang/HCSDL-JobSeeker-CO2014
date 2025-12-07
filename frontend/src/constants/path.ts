@@ -49,6 +49,7 @@ const path = {
   adminUsers: '/admin/users',
   adminSkills: '/admin/skills',
   adminCategories: '/admin/categories',
+  adminMetadata: '/admin/metadata', // NEW: Combined Skills + Categories view
   adminJobs: '/admin/jobs',
   adminCompanies: '/admin/companies',
   adminApplications: '/admin/applications',
