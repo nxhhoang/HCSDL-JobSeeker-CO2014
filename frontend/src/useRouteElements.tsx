@@ -38,6 +38,7 @@ import AdminDashboard from './pages/Admin/AdminDashboard'
 import AdminUsers from './pages/Admin/AdminUsers'
 import AdminSkills from './pages/Admin/AdminSkills'
 import AdminCategories from './pages/Admin/AdminCategories'
+import AdminMetadata from './pages/Admin/AdminMetadata'
 
 function ProtectedRouteForAuth() {
   const { isAuthenticated } = useContext(AppContext)
@@ -207,6 +208,10 @@ export default function useRouteElements() {
         {
           path: path.adminCategories,
           element: <AdminCategories />
+        },
+        {
+          path: path.adminMetadata,
+          element: <AdminMetadata />
         }
         // Sẽ thêm AdminJobs, AdminCompanies, AdminApplications, AdminReports sau
       ]
