@@ -78,3 +78,59 @@ BEGIN
     DELETE FROM [dbo].[JOB] WHERE JobID IN (SELECT JobID FROM @DeletedJobIDs);
 END;
 GO
+
+
+-- Trigger để duy trì số lượng người đã ứng tuyển cho mỗi job
+-- Thêm cột để lưu số lượng người đã ứng tuyển hiện tại
+ALTER TABLE [dbo].[JOB] 
+ADD CurrentApplicants INT DEFAULT 0;
+GO
+
+-- Cập nhật lại số liệu cũ cho đúng (nếu đã lỡ có data)
+UPDATE J
+SET CurrentApplicants = (SELECT COUNT(*) FROM [dbo].[APPLY] WHERE JobID = J.JobID)
+FROM [dbo].[JOB] J;
+GO
+
+USE JobRecruitmentDB;
+GO
+
+CREATE OR ALTER TRIGGER trg_MaintainJobMetrics
+ON [dbo].[APPLY]
+AFTER INSERT, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- TRƯỜNG HỢP 1: Có ứng viên mới nộp đơn (INSERT)
+    -- Logic: Tìm JobID trong bảng inserted và cộng thêm 1 vào CurrentApplicants
+    IF EXISTS (SELECT 1 FROM inserted)
+    BEGIN
+        UPDATE J
+        SET J.CurrentApplicants = J.CurrentApplicants + i.cnt
+        FROM [dbo].[JOB] J
+        JOIN (
+            SELECT JobID, COUNT(*) AS cnt
+            FROM inserted
+            GROUP BY JobID
+        ) AS i
+            ON J.JobID = i.JobID;
+    END
+
+
+    -- TRƯỜNG HỢP 2: Ứng viên hủy/rút đơn (DELETE)
+    -- Logic: Tìm JobID trong bảng deleted và trừ đi 1 khỏi CurrentApplicants
+    IF EXISTS (SELECT 1 FROM deleted)
+    BEGIN
+                UPDATE J
+        SET J.CurrentApplicants = J.CurrentApplicants - i.cnt
+        FROM [dbo].[JOB] J
+        JOIN (
+            SELECT JobID, COUNT(*) AS cnt
+            FROM deleted
+            GROUP BY JobID
+        ) AS i
+            ON J.JobID = i.JobID;
+    END
+END;
+GO
