@@ -101,7 +101,8 @@ GO
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SKILL]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[SKILL] (
-        SkillID INT PRIMARY KEY IDENTITY(1,1),
+        -- SkillID INT PRIMARY KEY IDENTITY(1,1),
+        SkillID VARCHAR(10) PRIMARY KEY,
         SkillName NVARCHAR(100) UNIQUE NOT NULL,
         SDescription NVARCHAR(MAX)
     );
@@ -268,7 +269,8 @@ GO
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[REQUIRE]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[REQUIRE] (
-        SkillID INT,
+        -- SkillID INT,
+        SkillID VARCHAR(10),
         JobID INT,
         PRIMARY KEY (SkillID, JobID),
         FOREIGN KEY (SkillID) REFERENCES SKILL(SkillID),
@@ -317,7 +319,8 @@ IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[OW
 BEGIN
     CREATE TABLE [dbo].[OWN] (
         ID INT,
-        SkillID INT,
+        -- SkillID INT,
+        SkillID VARCHAR(10),
         PRIMARY KEY (ID, SkillID),
         FOREIGN KEY (ID) REFERENCES [USER](ID),
         FOREIGN KEY (SkillID) REFERENCES SKILL(SkillID)

@@ -134,3 +134,59 @@ BEGIN
     END
 END;
 GO
+
+
+
+
+
+
+
+-- for prefix
+CREATE TRIGGER trg_SKILL_GenerateID
+ON SKILL
+INSTEAD OF INSERT
+AS
+BEGIN
+    DECLARE @prefix VARCHAR(3) = 'SKL';
+    DECLARE @nextNumber INT;
+
+    -- Lấy số lớn nhất hiện có
+    SELECT @nextNumber =
+        ISNULL(MAX(CAST(SUBSTRING(SkillID, 4, 10) AS INT)), 0) + 1
+    FROM SKILL;
+
+    -- Insert từng row
+    INSERT INTO SKILL (SkillID, SkillName, SDescription)
+    SELECT 
+        @prefix + RIGHT('000' + CAST(@nextNumber + ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) - 1 AS VARCHAR(10)), 3),
+        SkillName,
+        SDescription
+    FROM inserted;
+END
+GO
+
+CREATE TRIGGER trg_REQUIRE_NormalizeSkillID
+ON REQUIRE
+INSTEAD OF INSERT
+AS
+BEGIN
+    INSERT INTO REQUIRE (JobID, SkillID)
+    SELECT 
+        JobID,
+        'SKL' + RIGHT('000' + CAST(SkillID AS VARCHAR(10)), 3)
+    FROM inserted;
+END
+GO
+
+CREATE TRIGGER trg_OWN_NormalizeSkillID
+ON OWN
+INSTEAD OF INSERT
+AS
+BEGIN
+    INSERT INTO OWN (ID, SkillID)
+    SELECT 
+        ID,
+        'SKL' + RIGHT('000' + CAST(SkillID AS VARCHAR(10)), 3)
+    FROM inserted;
+END
+GO
